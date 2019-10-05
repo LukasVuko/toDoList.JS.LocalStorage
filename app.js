@@ -7,6 +7,8 @@ const taskList = document.querySelector('.collection');
 loadEventListeners();
 
 function loadEventListeners() {
+  document.addEventListener('DOMContentLoaded', getTasks);
+
   form.addEventListener('submit', addTaskToCollection);
 
   taskList.addEventListener('click', removeTask);
@@ -14,6 +16,27 @@ function loadEventListeners() {
   clearBtn.addEventListener('click', clearTasks);
 
   filter.addEventListener('keyup', filterTasks);
+}
+
+function getTasks() {
+  let tasks;
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+
+  tasks.forEach(item => {
+    task = document.createElement('li');
+    task.className = 'collection-item';
+    task.appendChild(document.createTextNode(item));
+    // Create <a>
+    const link = document.createElement('a');
+    link.className = 'delete-item secondary-content';
+    link.innerHTML = '<i class="fa fa-remove"></i>';
+    task.appendChild(link);
+    taskList.appendChild(task);
+  });
 }
 
 function addTaskToCollection(e) {
@@ -31,8 +54,20 @@ function addTaskToCollection(e) {
     link.innerHTML = '<i class="fa fa-remove"></i>';
     li.appendChild(link);
     taskList.appendChild(li);
-    taskInput.value = '';
   }
+  storeTaskInLocalStorage();
+  taskInput.value = '';
+}
+
+function storeTaskInLocalStorage() {
+  let tasks;
+  if (localStorage.getItem('tasks') === null) {
+    tasks = [];
+  } else {
+    tasks = JSON.parse(localStorage.getItem('tasks'));
+  }
+  tasks.push(taskInput.value);
+  localStorage.setItem('tasks', JSON.stringify(tasks));
 }
 
 function removeTask(e) {
